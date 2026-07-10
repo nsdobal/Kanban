@@ -1,4 +1,5 @@
 import { Draggable } from '@hello-pangea/dnd';
+import type { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { Card as CardType } from '../lib/data';
 import { Trash2 } from 'lucide-react';
 import './Card.css';
@@ -11,8 +12,8 @@ interface CardProps {
 
 export const Card = ({ card, index, onDelete }: CardProps) => {
   return (
-    <Draggable draggableId={card.id} index={index}>
-      {(provided, snapshot) => (
+     <Draggable draggableId={card.id} index={index}>
+       {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
         <div
           className={`card ${snapshot.isDragging ? 'is-dragging' : ''}`}
           ref={provided.innerRef}

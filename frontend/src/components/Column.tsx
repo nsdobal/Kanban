@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
+import type {
+  DroppableProvided,
+  DroppableStateSnapshot,
+} from '@hello-pangea/dnd';
 import { Column as ColumnType, Card as CardType } from '../lib/data';
 import { Card } from './Card';
 import { Plus, Edit2, Check, X } from 'lucide-react';
@@ -13,7 +17,13 @@ interface ColumnProps {
   onRename: (colId: string, newTitle: string) => void;
 }
 
-export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: ColumnProps) => {
+export const Column = ({
+  column,
+  cards,
+  onAddCard,
+  onDeleteCard,
+  onRename,
+}: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(column.title);
   const [isAdding, setIsAdding] = useState(false);
@@ -34,13 +44,20 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
     } else {
       setEditTitle(column.title);
     }
+
     setIsEditing(false);
   };
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (newCardTitle.trim()) {
-      onAddCard(column.id, newCardTitle.trim(), newCardDetails.trim());
+      onAddCard(
+        column.id,
+        newCardTitle.trim(),
+        newCardDetails.trim()
+      );
+
       setNewCardTitle('');
       setNewCardDetails('');
       setIsAdding(false);
@@ -59,6 +76,7 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
               onChange={(e) => setEditTitle(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleRenameSubmit();
+
                 if (e.key === 'Escape') {
                   setEditTitle(column.title);
                   setIsEditing(false);
@@ -66,18 +84,39 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
               }}
               className="rename-input"
             />
-            <button className="icon-btn success" onClick={handleRenameSubmit}>
+
+            <button
+              className="icon-btn success"
+              onClick={handleRenameSubmit}
+            >
               <Check size={16} />
             </button>
-            <button className="icon-btn danger" onClick={() => { setEditTitle(column.title); setIsEditing(false); }}>
+
+            <button
+              className="icon-btn danger"
+              onClick={() => {
+                setEditTitle(column.title);
+                setIsEditing(false);
+              }}
+            >
               <X size={16} />
             </button>
           </div>
         ) : (
-          <div className="title-group" onClick={() => setIsEditing(true)}>
+          <div
+            className="title-group"
+            onClick={() => setIsEditing(true)}
+          >
             <h3>{column.title}</h3>
-            <span className="card-count">{cards.length}</span>
-            <button className="edit-btn" title="Rename Column">
+
+            <span className="card-count">
+              {cards.length}
+            </span>
+
+            <button
+              className="edit-btn"
+              title="Rename Column"
+            >
               <Edit2 size={14} />
             </button>
           </div>
@@ -85,9 +124,14 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
       </div>
 
       <Droppable droppableId={column.id}>
-        {(provided, snapshot) => (
+        {(
+          provided: DroppableProvided,
+          snapshot: DroppableStateSnapshot
+        ) => (
           <div
-            className={`column-content ${snapshot.isDraggingOver ? 'is-dragging-over' : ''}`}
+            className={`column-content ${
+              snapshot.isDraggingOver ? 'is-dragging-over' : ''
+            }`}
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -96,9 +140,12 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
                 key={card.id}
                 card={card}
                 index={index}
-                onDelete={(cardId) => onDeleteCard(column.id, cardId)}
+                onDelete={(cardId) =>
+                  onDeleteCard(column.id, cardId)
+                }
               />
             ))}
+
             {provided.placeholder}
           </div>
         )}
@@ -106,34 +153,55 @@ export const Column = ({ column, cards, onAddCard, onDeleteCard, onRename }: Col
 
       <div className="column-footer">
         {isAdding ? (
-          <form className="add-card-form" onSubmit={handleAddSubmit}>
+          <form
+            className="add-card-form"
+            onSubmit={handleAddSubmit}
+          >
             <input
               type="text"
               placeholder="Card Title"
               value={newCardTitle}
-              onChange={(e) => setNewCardTitle(e.target.value)}
+              onChange={(e) =>
+                setNewCardTitle(e.target.value)
+              }
               className="add-card-input"
               autoFocus
               required
             />
+
             <textarea
               placeholder="Details (optional)"
               value={newCardDetails}
-              onChange={(e) => setNewCardDetails(e.target.value)}
+              onChange={(e) =>
+                setNewCardDetails(e.target.value)
+              }
               className="add-card-textarea"
               rows={2}
             />
+
             <div className="add-card-actions">
-              <button type="submit" className="btn-primary" disabled={!newCardTitle.trim()}>
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={!newCardTitle.trim()}
+              >
                 Add Card
               </button>
-              <button type="button" className="btn-secondary" onClick={() => setIsAdding(false)}>
+
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setIsAdding(false)}
+              >
                 Cancel
               </button>
             </div>
           </form>
         ) : (
-          <button className="add-btn" onClick={() => setIsAdding(true)}>
+          <button
+            className="add-btn"
+            onClick={() => setIsAdding(true)}
+          >
             <Plus size={16} />
             <span>Add a card</span>
           </button>
